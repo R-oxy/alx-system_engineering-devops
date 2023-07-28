@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
+# This script display some values of /etc/passwd
 
-# Script: display_passwd.sh
-# Description: Displays the content of the file /etc/passwd with only the required information: username, user id, and home directory path for each user.
-# Usage: ./display_passwd.sh
-
-while IFS=':' read -r username _ uid _ home _
-do
-    echo "Username: $username"
-    echo "User ID: $uid"
-    echo "Home Directory: $home"
+while IFS=: read -r f1 f2 f3 f4 f5 f6 f7
+do echo "$f1"":""$f3"":""$f6"
+    f2=$f2
+    f4=$f4
+    f5=$f5
+    f7=$f7
 done < /etc/passwd
