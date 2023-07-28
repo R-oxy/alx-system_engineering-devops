@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Check the number of arguments
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+fi
+
+# Check if manage_my_process script exists
+if [ ! -f manage_my_process ]; then
+    echo "manage_my_process script not found."
+    exit 1
+fi
+
+# Execute manage_my_process script with the given argument
+./manage_my_process "$1"
