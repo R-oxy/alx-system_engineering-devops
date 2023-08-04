@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-
 # Get all active network interfaces
+
 interfaces=$(ifconfig | grep -E "^[a-zA-Z0-9]+" | awk '{print $1}')
 
-# Loop through each interface to get its IPv4 address
 for interface in $interfaces; do
     ipv4_address=$(ifconfig $interface | grep -oE "inet addr:[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" | awk -F ":" '{print $2}')
     echo $ipv4_address
