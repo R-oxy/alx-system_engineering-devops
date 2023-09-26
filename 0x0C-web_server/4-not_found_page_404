@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Installs Nginx with specific configurations:
+# - Listens on port 80.
+# - Returns a "Hello World!" page at the root with a curl GET request.
+# - Configures /redirect_me as a "301 Moved Permanently" redirect.
+# - Includes a custom 404 page containing "Ceci n'est pas une page."
+
+# Update the package repository
+apt-get update
+
+# Install Nginx
+apt-get install -y nginx
+
+# Create the directory for HTML files
+mkdir /etc/nginx/html
+
+# Create the default index.html page with "Hello World!" content
+touch /etc/nginx/html/index.html
+echo "Hello World!" > /etc/nginx/html/index.html
+
+# Create a custom 404.html page with the specified message
+touch /etc/nginx/html/404.html
+echo "Ceci n'est pas une page" > /etc/nginx/html/404.html
+
+# Configure the Nginx server block
+printf %s "server {
+    listen 80;
+    listen [::]:80 default_server;
+    root   /etc/nginx/html;
+    index  index.html index.htm;
+
+    # Configure /redirect_me to perform a "301 Moved Permanently" redirect
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+
+    # Configure a custom 404 page
+    error_page 404 /404.html;
+    location /404 {
+      root /etc/nginx/html;
+      internal;
+    }
+}" > /etc/nginx/sites-available/default
+
+# Restart the Nginx service to apply the changes
+Sudo service nginx restart
