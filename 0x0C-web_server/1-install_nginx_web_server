@@ -26,7 +26,7 @@ printf %s "server {
 " > /etc/nginx/sites-available/default
 
 # Start Nginx (without using systemctl)
-/usr/sbin/nginx
+sudo service nginx start
 
 # Ensure Nginx is listening on port 80
 lsof -i :80

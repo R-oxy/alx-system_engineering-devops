@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Configure your Nginx server so that /redirect_me is redirecting to another page
+# The redirection must be a “301 Moved Permanently”
+
+# Install Nginx if it's not already installed
+if ! [ -x "$(command -v nginx)" ]; then
+    sudo apt-get update
+    sudo apt-get -y upgrade
+    sudo apt-get -y install nginx
+fi
+
+# Start nginx service
+sudo service nginx start
+
+# Create or modify the default index file for Nginx in the default HTML directory
+echo "301 Moved Permanently" | sudo tee /usr/share/nginx/html/index.html
+
+# Create or modify the index file for the Nginx server block configuration
+echo "301 Moved Permanently" | sudo tee /etc/nginx/html/index.html
+
+# Create the Nginx server block configuration
+printf %s "server {
+     listen    80 default_server;
+     listen    [::]:80 default_server;
+     root      /etc/nginx/html;
+     index     index.html index.htm;
+     
+     location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+     }
+}
+" | sudo tee /etc/nginx/sites-available/default
+
+# Restart nginx service
+sudo service nginx restart
