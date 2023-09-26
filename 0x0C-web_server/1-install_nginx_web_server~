@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Installs Nginx with the following configurations:
+# - Listens on port 80.
+# - Returns a page containing "Hello World!" when queried
+#   at the root with a curl GET request.
+
+# Update the package repository
+apt-get update
+
+# Install Nginx
+apt-get -y install nginx
+
+# Create directory html
+mkdir /etc/nginx/html
+
+# Create a simple HTML file with "Hello World!" content
+echo "Hello World!" > /etc/nginx/html/index.html
+
+# Create the Nginx server block configuration
+cat <<EOF > /etc/nginx/sites-available/default
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /etc/nginx/html;
+
+    index index.html index.htm;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+
+    location = /index.html {
+        try_files \$uri =404;
+    }
+}
+EOF
+
+# Create a symbolic link to enable the default server block
+ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+
+# Remove the default Nginx welcome page
+rm -f /etc/nginx/sites-enabled/default
+
+# Start Nginx (without using systemctl)
+/usr/sbin/nginx
+
+# Ensure Nginx is listening on port 80
+lsof -i :80
+
+# Check if Nginx is running and accessible
+if [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost)" == "200" ]; then
+  echo "Nginx installed and configured successfully!"
+else
+  echo "Nginx installation and configuration failed!"
+fi
