@@ -6,10 +6,10 @@
 # - Includes a custom 404 page containing "Ceci n'est pas une page."
 
 # Update the package repository
-apt-get update
+sudo apt-get update
 
 # Install Nginx
-apt-get install -y nginx
+sudo apt-get install -y nginx
 
 # Create the directory for HTML files
 mkdir /etc/nginx/html
@@ -36,11 +36,14 @@ printf %s "server {
 
     # Configure a custom 404 page
     error_page 404 /404.html;
-    location /404 {
+    location /404.html {
       root /etc/nginx/html;
       internal;
+      default_type text/html;
+      return 200 "Ceci n'est pas une page";
     }
-}" > /etc/nginx/sites-available/default
+}
+" > /etc/nginx/sites-available/default
 
 # Restart the Nginx service to apply the changes
 Sudo service nginx restart

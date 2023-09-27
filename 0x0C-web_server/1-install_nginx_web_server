@@ -5,10 +5,10 @@
 #   at the root with a curl GET request.
 
 # Update the package repository
-apt-get update
+sudo apt-get update
 
 # Install Nginx
-apt-get -y install nginx
+sudo apt-get -y install nginx
 
 # Create directory html
 mkdir /etc/nginx/html
