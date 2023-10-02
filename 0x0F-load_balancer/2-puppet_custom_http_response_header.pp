@@ -21,13 +21,13 @@ file { '/etc/nginx/sites-available/default':
 
     # Configure a custom 404 page
     error_page 404 /404.html;
-    location /404 {
+    location /404.html {
         root /var/www/html;
         internal;
     }
 
     # Add custom HTTP header
-    add_header X-Served-By $hostname;
+    add_header X-Served-By \$hostname;
 
 }\n",
 }
