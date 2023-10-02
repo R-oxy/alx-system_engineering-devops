@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Bash script to install and configure HAProxy
+
+# Update the package repository
+sudo apt-get update
+
+# Install HAProxy
+sudo apt-get install -y haproxy
+
+# Configure HAProxy
+sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOF
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /var/run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    log global
+    mode    http
+    option  httplog
+    option  dontlognull
+    retries 3
+    timeout http-request 10s
+    timeout queue   1m
+    timeout connect 10s
+    timeout client  1m
+    timeout server  1m
+    timeout http-keep-alive 10s
+    timeout check   10s
+    maxconn 3000
+
+frontend http-in
+    bind *:80
+    default_backend web-backend
+
+backend web-backend
+    balance roundrobin
+    server web-01 54.144.20.75:80 check
+    server web-02 100.26.151.157:80 check
+EOF
+
+# Start HAProxy using init script
+sudo service haproxy restart
