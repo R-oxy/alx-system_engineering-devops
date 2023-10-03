@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Configure nginx to run on port 80
+
+# Install nginx if doesn't exist
+sudo apt-get update
+sudo apt-get install -y nginx
+
+# Start Nginx service
+sudo service nginx start
+
+# Check if Nginx is listening on port 80
+if netstat -tuln | grep ":80 "; then
+  echo "Nginx is listening on port 80."
+else
+  echo "Nginx is not listening on port 80."
+fi
