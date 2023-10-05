@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Stop Nginx
+service nginx stop
+
+# Create a symbolic link to enable the default site configuration
+ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Start Nginx
+service nginx start
