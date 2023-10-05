@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Configure your domain zone
+
+# Check for the correct number of arguments
+if [ $# -eq 1 ]; then
+    Dns="www.$1 lb-01.$1 web-01.$1 web-02.$1"
+else
+    Dns="$2.$1"
+fi
+
+# Use dig and awk to display DNS information
+dig $Dns | awk '/ANSWER SECTION:/ {
+    getline;
+    split($1, a, ".");
+    record_type = $4;
+    sub(/[^A-Za-z0-9]/, "", record_type);
+    print "The subdomain", a[1], "is a", record_type, "record and points to", $5
+}'
