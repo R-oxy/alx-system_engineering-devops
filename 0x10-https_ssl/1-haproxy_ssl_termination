@@ -33,7 +33,7 @@ defaults
     errorfile 504 /etc/haproxy/errors/504.http
 
 # The frontend only listens on port 80
-# If it detects a LetsEncrypt request, is uses the LE backend
+# If it detects a LetsEncrypt request, it uses the LE backend
 # Else it goes to the default backend for the web servers
 frontend http
     bind *:80
@@ -58,3 +58,33 @@ backend web-backend
     balance roundrobin
     server web-01 54.144.20.75:80 check
     server web-02 100.26.151.157:80 check
+
+# SSL Termination Configuration
+frontend https
+    bind *:443 ssl crt /etc/ssl/www.teflondev.tech/www.teflondev.tech.pem
+    mode http
+    default_backend web-backend
+
+# Ensure the root of the domain returns "Holberton School"
+backend web-backend
+    balance roundrobin
+    server web-01 54.144.20.75:80 check
+    server web-02 100.26.151.157:80 check
+    http-request set-header Host www.teflondev.tech
+    http-response set-header Server HAProxy
+    http-response set-header Content-Length 19
+    http-response set-header Content-Type text/html
+    http-response set-header Cache-Control no-cache
+    http-response set-header Connection keep-alive
+    http-response set-header Accept-Ranges bytes
+    http-response set-header Vary Accept-Encoding
+    http-response set-header X-Content-Type-Options nosniff
+    http-response set-header X-XSS-Protection 1; mode=block
+    http-response set-header Strict-Transport-Security max-age=31536000; includeSubDomains; preload
+    http-response set-header Referrer-Policy same-origin
+    http-response set-header X-Frame-Options DENY
+    http-response set-header X-UA-Compatible IE=edge,chrome=1
+    http-response set-header Feature-Policy accelerometer 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'
+    http-response set-header Content-Security-Policy default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests; block-all-mixed-content
+    http-response set-header X-Permitted-Cross-Domain-Policies none
+    http-response set-header X-Content-Security-Policy default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests; block-all-mixed-content
