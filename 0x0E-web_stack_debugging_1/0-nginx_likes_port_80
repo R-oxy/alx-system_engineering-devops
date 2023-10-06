@@ -8,6 +8,12 @@ sudo apt-get install -y nginx
 # Start Nginx service
 sudo service nginx start
 
+# Enable the default Nginx site configuration
+sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Reload Nginx configuration
+sudo service nginx restart
+
 # Check if Nginx is listening on port 80
 if netstat -tuln | grep ":80 "; then
   echo "Nginx is listening on port 80."
