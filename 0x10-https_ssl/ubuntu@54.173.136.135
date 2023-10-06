@@ -1,39 +1,29 @@
-# HAProxy Configuration
-
-# Global settings
 global
     log /dev/log local0
     log /dev/log local1 notice
     chroot /var/lib/haproxy
-    
-    # HAProxy statistics socket configuration
     stats socket /run/haproxy/admin.sock mode 660 level admin
     stats timeout 30s
     user haproxy
     group haproxy
     daemon
 
-    # SSL settings
+    # Default SSL material locations
     ca-base /etc/ssl/certs
     crt-base /etc/ssl/private
 
-    # Default SSL ciphers and options
+    # Default ciphers to use on SSL-enabled listening sockets.
     ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
     ssl-default-bind-options no-sslv3
 
-# Default settings
 defaults
     log global
     mode http
     option httplog
     option dontlognull
-    
-    # Connection timeouts
     timeout connect 5000
     timeout client 50000
     timeout server 50000
-    
-    # Error pages
     errorfile 400 /etc/haproxy/errors/400.http
     errorfile 403 /etc/haproxy/errors/403.http
     errorfile 408 /etc/haproxy/errors/408.http
@@ -42,25 +32,28 @@ defaults
     errorfile 503 /etc/haproxy/errors/503.http
     errorfile 504 /etc/haproxy/errors/504.http
 
-# HTTP frontend
+# The frontend only listens on port 80
+# If it detects a LetsEncrypt request, it uses the LE backend
+# Else it goes to the default backend for the web servers
 frontend http
     bind *:80
-    
-    # SSL termination configuration
+
+    # This is our new config that listens on port 443 for SSL connections
     bind *:443 ssl crt /etc/ssl/www.teflondev.tech/www.teflondev.tech.pem
-    
-    # Check for Let's Encrypt requests
+
+    # Test URI to see if it's a Let's Encrypt request
     acl letsencrypt-acl path_beg /.well-known/acme-challenge/
     use_backend letsencrypt-backend if letsencrypt-acl
-    
+
     mode http
     default_backend web-backend
 
-# Let's Encrypt backend
+# LE Backend
 backend letsencrypt-backend
     server letsencrypt 127.0.0.1:8888
 
-# Default backend for web applications
+# Normal (default) Backend
+# for web apps
 backend web-backend
     balance roundrobin
     server web-01 54.144.20.75:80 check
