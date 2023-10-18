@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Generates a MySQL dump with all databases
+# and creates a compressed archive out of it.
+
+# Check if the password argument is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <MySQL root password>"
+  exit 1
+fi
+
+# MySQL user and password
+MYSQL_USER="root"
+MYSQL_PASSWORD="$1"
+
+# Generate the current date in day-month-year format
+CURRENT_DATE=$(date +"%d-%m-%Y")
+
+# MySQL dump file name
+DUMP_FILE="backup.sql"
+
+# Compressed archive file name
+ARCHIVE_FILE="${CURRENT_DATE}.tar.gz"
+
+# Generate MySQL dump
+# The --all-databases flag ensures all databases are dumped
+# The -u flag specifies the MySQL user
+# The -p flag is for password, and there should be no space between -p and the password
+mysqldump --all-databases -u${MYSQL_USER} -p${MYSQL_PASSWORD} > ${DUMP_FILE}
+
+# Check if mysqldump was successful
+if [ $? -eq 0 ]; then
+  echo "MySQL dump was successful."
+else
+  echo "MySQL dump failed."
+  exit 1
+fi
+
+# Compress the MySQL dump file into a tar.gz archive
+tar -czvf ${ARCHIVE_FILE} ${DUMP_FILE}
+
+# Check if compression was successful
+if [ $? -eq 0 ]; then
+  echo "Compression was successful."
+else
+  echo "Compression failed."
+  exit 1
+fi
+
+# List the generated files
+ls -lh ${ARCHIVE_FILE}
