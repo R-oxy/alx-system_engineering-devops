@@ -1,0 +1,42 @@
+#!/usr/bin/python3
+"""
+This script fetches data from a REST API to display an employee's TODO list
+progress and exports it to a CSV file.
+"""
+
+import csv
+import requests
+import sys
+
+
+if __name__ == "__main__":
+    # Check if the script received the employee ID as a parameter
+    if len(sys.argv) < 2:
+        print("Usage: {} <employee_id>".format(sys.argv[0]))
+        sys.exit(1)
+
+    # Extract the employee ID from the command-line arguments
+    employee_id = sys.argv[1]
+
+    # Fetch employee data from the API
+    employee_response = requests.get(
+        "https://jsonplaceholder.typicode.com/users/{}".format(employee_id))
+    employee_data = employee_response.json()
+
+    # Fetch the TODO list for the employee
+    todos_response = requests.get(
+        "https://jsonplaceholder.typicode.com/todos?userId={}".format(employee_id))
+    todos_data = todos_response.json()
+
+    # Open a CSV file for writing
+    with open("{}.csv".format(employee_id), mode='w', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
+        
+        # Write each task to the CSV file
+        for task in todos_data:
+            csv_writer.writerow([
+                employee_id,
+                employee_data.get('username'),
+                task.get('completed'),
+                task.get('title')
+            ])
