@@ -1,0 +1,48 @@
+# Default server configuration
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+
+    # Default location block
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Proxy configuration for /airbnb-onepage
+    location /airbnb-onepage {
+        include proxy_params;
+        proxy_pass http://127.0.0.1:5000;
+    }
+
+    # Error page configuration
+    error_page 404 /custom_404.html;
+    location = /custom_404.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    # Additional headers
+    add_header X-Served-By "Your-Server-Name";
+}
+
+# Additional server block for specific location
+server {
+    listen 80;
+    listen [::]:80;
+
+    # Location block for /airbnb-onepage/
+    location = /airbnb-onepage/ {
+        proxy_pass http://0.0.0.0:5000/airbnb-onepage/;
+    }
+
+    # Additional rewrite rule
+    location /redirect_me {
+        rewrite ^/redirect_me https://www.youtube.com/watch?v=B1ANfsDyjeA permanent;
+    }
+
+    # Additional settings and root
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    server_name _;
+}
