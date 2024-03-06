@@ -2,7 +2,7 @@
 # Client configuration file
 
 Host 272344-web-01
-  HostName 	100.25.147.134
+  HostName 	107.21.38.215
   User ubuntu
   IdentityFile ~/.ssh/school
   PasswordAuthentication no
