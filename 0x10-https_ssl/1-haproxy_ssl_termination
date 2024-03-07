@@ -63,5 +63,5 @@ backend letsencrypt-backend
 # Default backend for web applications
 backend web-backend
     balance roundrobin
-    server web-01 54.144.20.75:80 check
-    server web-02 100.26.151.157:80 check
+    server web-01 107.21.38.215:80 check
+    server web-02 54.164.170.176:80 check
